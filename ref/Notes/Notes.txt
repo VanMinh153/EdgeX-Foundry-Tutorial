@@ -1,0 +1,69 @@
+docker-compose ps
+docker-compose up -d
+# Consul login token: main_consul-acl-token/bootstrap_token.json db82e876-a7e1-ed0e-9534-b7fba9616049
+
+
+http://localhost:59882/api/v2/ping
+
+# 404 page not found
+http://localhost:59882/api/v2/device
+
+# Creating Access Token for API Gateway Authentication
+openssl ecparam -name prime256v1 -genkey -noout -out ec256.key
+openssl ec -out ec256.pub < ec256.key
+
+ID=`uuidgen`
+KONGJWT=`sudo cat /tmp/edgex/secrets/security-proxy-setup/kong-admin-jwt`
+
+docker-compose -p edgex -f docker-compose.yml run --rm \
+  -v `pwd`:/host:ro -u "$UID" \
+  --entrypoint "/edgex/secrets-config" proxy-setup \
+  --proxy adduser \
+  --token-type jwt \
+  --id "$ID" \
+  --algorithm ES256 \
+  --public_key /host/ec256.pub \
+  --user your_username \
+  --jwt "$KONGJWT"
+
+docker-compose -p edgex -f docker-compose.yml run --rm \
+  -v `pwd`:/host:ro -u "$UID" \
+  --entrypoint "/edgex/secrets-config" proxy-setup \
+  --proxy jwt \
+  --id "$ID" \
+  --algorithm ES256 \
+  --private_key /host/ec256.key
+
+curl -k --resolve kong:8443:127.0.0.1 \
+  -H "Authorization: Bearer <JWT>" \
+  https://kong:8443/core-data/api/v2/ping
+
+docker-compose -p edgex -f docker-compose.yml run --rm -u "$UID" \
+  --entrypoint "/edgex/secrets-config" proxy-setup \
+  --proxy deluser \
+  --user your_username \
+  --jwt "$KONGJWT"
+
+
+
+
+
+
+
+
+# Stopping EdgeX Foundry
+Stop the containers: docker-compose stop
+Stop and remove the containers: docker-compose down
+Stop and remove containers + volumes: docker-compose down -v
+
+
+# Sử dụng MSYS2 để cài đặt ZeroMQ
+pacman -S mingw-w64-x86_64-zeromq
+===
+$env:CGO_CFLAGS = "-IC:/msys64/mingw64/include"
+$env:CGO_LDFLAGS = "-LC:/msys64/mingw64/lib -lzmq"
+$env:PKG_CONFIG_PATH = "C:/msys64/mingw64/lib/pkgconfig"
+
+echo "CGO_CFLAGS: $env:CGO_CFLAGS"
+echo "CGO_LDFLAGS: $env:CGO_LDFLAGS" 
+echo "PKG_CONFIG_PATH: $env:PKG_CONFIG_PATH"

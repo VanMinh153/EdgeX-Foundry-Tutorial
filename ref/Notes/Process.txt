@@ -1,0 +1,5 @@
+Delay: EdgeX Golang UI p.15
+
+In process:
+Quick start: can not connect to mqtt client
+Creating Access Token for API Gateway Authentication: can not run command, didn't know environment to run

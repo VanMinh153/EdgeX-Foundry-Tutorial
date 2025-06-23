@@ -1,0 +1,5 @@
+- custom-config
+  |- devices
+     |- my.custom.device.config.toml
+  |- profiles
+     |- my.custom.device.profile.yml
