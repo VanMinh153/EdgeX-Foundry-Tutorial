@@ -3,7 +3,8 @@
 #
 # Binaries for programs and plugins
 # edgex-compose-levski/*
-edgex-go/*
+edgex-examples/
+edgex-go/
 *.exe
 *.exe~
 *.dll

@@ -1,0 +1,10 @@
+# Sử dụng MSYS2 để cài đặt ZeroMQ
+pacman -S mingw-w64-x86_64-zeromq
+===
+$env:CGO_CFLAGS = "-IC:/msys64/mingw64/include"
+$env:CGO_LDFLAGS = "-LC:/msys64/mingw64/lib -lzmq"
+$env:PKG_CONFIG_PATH = "C:/msys64/mingw64/lib/pkgconfig"
+
+echo "CGO_CFLAGS: $env:CGO_CFLAGS"
+echo "CGO_LDFLAGS: $env:CGO_LDFLAGS" 
+echo "PKG_CONFIG_PATH: $env:PKG_CONFIG_PATH"

@@ -55,15 +55,3 @@ docker-compose -p edgex -f docker-compose.yml run --rm -u "$UID" \
 Stop the containers: docker-compose stop
 Stop and remove the containers: docker-compose down
 Stop and remove containers + volumes: docker-compose down -v
-
-
-# Sử dụng MSYS2 để cài đặt ZeroMQ
-pacman -S mingw-w64-x86_64-zeromq
-===
-$env:CGO_CFLAGS = "-IC:/msys64/mingw64/include"
-$env:CGO_LDFLAGS = "-LC:/msys64/mingw64/lib -lzmq"
-$env:PKG_CONFIG_PATH = "C:/msys64/mingw64/lib/pkgconfig"
-
-echo "CGO_CFLAGS: $env:CGO_CFLAGS"
-echo "CGO_LDFLAGS: $env:CGO_LDFLAGS" 
-echo "PKG_CONFIG_PATH: $env:PKG_CONFIG_PATH"
