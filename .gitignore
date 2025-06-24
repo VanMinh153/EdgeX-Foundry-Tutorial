@@ -5,6 +5,7 @@
 # edgex-compose-levski/*
 edgex-examples/
 edgex-go/
+ref/edgex-compose-levski/
 *.exe
 *.exe~
 *.dll
