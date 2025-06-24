@@ -1,11 +1,11 @@
 name: edgex
 services:
-  device-mqtt:
-    environment:
-      DEVICE_DEVICESDIR: /custom-config/devices
-      DEVICE_PROFILESDIR: /custom-config/profiles
-    volumes:
-    - /path/to/custom-config:/custom-config
+  # device-mqtt:
+  #   environment:
+  #     DEVICE_DEVICESDIR: /custom-config/devices
+  #     DEVICE_PROFILESDIR: /custom-config/profiles
+  #   volumes:
+  #   - ./custom-config:/custom-config
   app-service-rules:
     container_name: edgex-app-rules-engine
     depends_on:
@@ -225,6 +225,10 @@ services:
       MQTTBROKERINFO_HOST: edgex-mqtt-broker
       REGISTRY_HOST: edgex-core-consul
       SERVICE_HOST: edgex-device-mqtt
+      DEVICE_DEVICESDIR: /custom-config/devices
+      DEVICE_PROFILESDIR: /custom-config/profiles
+    volumes:
+    - ./custom-config:/custom-config
     hostname: edgex-device-mqtt
     image: edgexfoundry/device-mqtt:2.3.0
     networks:
