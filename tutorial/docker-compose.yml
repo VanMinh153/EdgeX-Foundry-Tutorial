@@ -21,8 +21,27 @@ volumes:
   log-data:
   consul-config:
   consul-data:
+  portainer_data:
 
 services:
+  portainer: 
+    image: portainer/portainer 
+    container_name: portainer 
+    ports: 
+      - "0.0.0.0:9000:9000" 
+    command: -H unix:///var/run/docker.sock 
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock:z 
+      - portainer_data:/data 
+  ui: 
+    image: nexus3.edgexfoundry.org:10004/docker-edgex-ui-go:master 
+    container_name: edgex-ui-go
+    ports: 
+      - "0.0.0.0:4000:4000/tcp" 
+    hostname: edgex-ui-go 
+    networks: 
+      edgex-network: null
+    read_only: true
   consul:
     image: edgexfoundry/docker-edgex-consul:1.2.0
     ports:
@@ -40,7 +59,7 @@ services:
       - EDGEX_SECURE=false
 
   redis:
-    image: redis:7.0.5-alpine
+    image: redis:5.0.8-alpine
     ports:
       - "0.0.0.0:6379:6379"
     container_name: edgex-redis
