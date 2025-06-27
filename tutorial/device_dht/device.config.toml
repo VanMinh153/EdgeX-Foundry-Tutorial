@@ -1,0 +1,35 @@
+[Writable]
+LogLevel = "INFO"
+
+[Device]
+DataTransform = true
+MaxCmdOps = 128
+MaxCmdValueLen = 256
+ProfilesDir = "/device_dht"
+DevicesDir = "/device_dht"
+UpdateLastConnected = false
+
+[Driver]
+IncomingTopic = "sensor/data"
+ResponseTopic = ""
+CommandTopic = ""
+QoS = 0
+KeepAlive = 10
+Retain = false
+AutoReconnect = true
+ConnectTimeout = 5000
+SkipCertVerify = true
+AuthMode = "none"
+SecretPath = ""
+BrokerAddress = "tcp://broker.emqx.io:1883"
+ClientId = "edgex-device-mqtt"
+Username = ""
+Password = ""
+
+[[DeviceList]]
+Name = "DHT_01"
+Profile = "SensorCluster"
+Description = "DHT11 MQTT Sensor"
+Labels = ["Temperature", "Humidity"]
+Protocols = { mqtt = { Schema = "tcp", Host = "broker.emqx.io", Port = "1883", ClientId = "sensor-client" } }
+AutoEvents = []

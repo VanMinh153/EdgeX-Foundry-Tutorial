@@ -7,9 +7,10 @@
   [DeviceList.Protocols]
     [DeviceList.Protocols.mqtt]
       # Comment out/remove below to use multi-level topics
-      CommandTopic = "CommandTopic"
+      # CommandTopic = "CommandTopic"
+
       # Uncomment below to use multi-level topics
-      # CommandTopic = "command/my-custom-device"
+      CommandTopic = "command/my-custom-device"
       
     [[DeviceList.AutoEvents]]
       Interval = "30s"

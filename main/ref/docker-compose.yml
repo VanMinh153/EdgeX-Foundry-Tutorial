@@ -1,13 +1,7 @@
 name: edgex
 services:
-  # device-mqtt:
-  #   environment:
-  #     DEVICE_DEVICESDIR: /custom-config/devices
-  #     DEVICE_PROFILESDIR: /custom-config/profiles
-  #   volumes:
-  #   - ./custom-config:/custom-config
   app-service-rules:
-    container_name: edgex-app-rules-engine-v2.3
+    container_name: edgex-app-rules-engine
     depends_on:
       consul:
         condition: service_started
@@ -45,7 +39,7 @@ services:
       - no-new-privileges:true
     user: 2002:2001
   command:
-    container_name: edgex-core-command-v2.3
+    container_name: edgex-core-command
     depends_on:
       consul:
         condition: service_started
@@ -64,7 +58,7 @@ services:
       CLIENTS_SUPPORT_SCHEDULER_HOST: edgex-support-scheduler
       DATABASES_PRIMARY_HOST: edgex-redis
       EDGEX_SECURITY_SECRET_STORE: "false"
-      MESSAGEQUEUE_EXTERNAL_URL: tcp://broker.emqx.io:1883
+      MESSAGEQUEUE_EXTERNAL_URL: tcp://edgex-mqtt-broker:1883
       MESSAGEQUEUE_HOST: edgex-redis
       MESSAGEQUEUE_INTERNAL_HOST: edgex-redis
       REGISTRY_HOST: edgex-core-consul
@@ -92,7 +86,7 @@ services:
       - -server
       - -client
       - 0.0.0.0
-    container_name: edgex-core-consul-v2.3
+    container_name: edgex-core-consul
     hostname: edgex-core-consul
     image: consul:1.13.2
     networks:
@@ -122,7 +116,7 @@ services:
           selinux: z
         volume: {}
   data:
-    container_name: edgex-core-data-v2.3
+    container_name: edgex-core-data
     depends_on:
       consul:
         condition: service_started
@@ -165,7 +159,7 @@ services:
       - no-new-privileges:true
     user: 2002:2001
   database:
-    container_name: edgex-redis-v2.3
+    container_name: edgex-redis
     environment:
       CLIENTS_CORE_COMMAND_HOST: edgex-core-command
       CLIENTS_CORE_DATA_HOST: edgex-core-data
@@ -199,7 +193,7 @@ services:
           selinux: z
         volume: {}
   device-mqtt:
-    container_name: edgex-device-mqtt-v2.3
+    container_name: edgex-device-mqtt
     depends_on:
       consul:
         condition: service_started
@@ -214,9 +208,6 @@ services:
         condition: service_started
         required: true
     environment:
-      MQTTBROKERINFO_INCOMINGTOPIC: "incoming/data/#"
-      MQTTBROKERINFO_RESPONSETOPIC: "command/response/#"
-      MQTTBROKERINFO_USETOPICLEVELS: "true"
       CLIENTS_CORE_COMMAND_HOST: edgex-core-command
       CLIENTS_CORE_DATA_HOST: edgex-core-data
       CLIENTS_CORE_METADATA_HOST: edgex-core-metadata
@@ -228,10 +219,6 @@ services:
       MQTTBROKERINFO_HOST: edgex-mqtt-broker
       REGISTRY_HOST: edgex-core-consul
       SERVICE_HOST: edgex-device-mqtt
-      DEVICE_DEVICESDIR: /custom-config/devices
-      DEVICE_PROFILESDIR: /custom-config/profiles
-    volumes:
-    - ./custom-config:/custom-config
     hostname: edgex-device-mqtt
     image: edgexfoundry/device-mqtt:2.3.0
     networks:
@@ -248,7 +235,7 @@ services:
       - no-new-privileges:true
     user: 2002:2001
   metadata:
-    container_name: edgex-core-metadata-v2.3
+    container_name: edgex-core-metadata
     depends_on:
       consul:
         condition: service_started
@@ -291,7 +278,7 @@ services:
       - /usr/sbin/mosquitto
       - -c
       - /mosquitto-no-auth.conf
-    container_name: edgex-mqtt-broker-v2.3
+    container_name: edgex-mqtt-broker
     hostname: edgex-mqtt-broker
     image: eclipse-mosquitto:2.0.15
     networks:
@@ -308,7 +295,7 @@ services:
       - no-new-privileges:true
     user: 2002:2001
   notifications:
-    container_name: edgex-support-notifications-v2.3
+    container_name: edgex-support-notifications
     depends_on:
       consul:
         condition: service_started
@@ -343,7 +330,7 @@ services:
       - no-new-privileges:true
     user: 2002:2001
   rulesengine:
-    container_name: edgex-kuiper-v2.3
+    container_name: edgex-kuiper
     depends_on:
       database:
         condition: service_started
@@ -383,7 +370,7 @@ services:
           selinux: z
         volume: {}
   scheduler:
-    container_name: edgex-support-scheduler-v2.3
+    container_name: edgex-support-scheduler
     depends_on:
       consul:
         condition: service_started
@@ -420,7 +407,7 @@ services:
       - no-new-privileges:true
     user: 2002:2001
   system:
-    container_name: edgex-sys-mgmt-agent-v2.3
+    container_name: edgex-sys-mgmt-agent
     depends_on:
       command:
         condition: service_started
@@ -477,7 +464,7 @@ services:
           selinux: z
           create_host_path: true
   ui:
-    container_name: edgex-ui-go-v2.3
+    container_name: edgex-ui-go
     environment:
       EDGEX_SECURITY_SECRET_STORE: "false"
       SERVICE_HOST: edgex-ui-go

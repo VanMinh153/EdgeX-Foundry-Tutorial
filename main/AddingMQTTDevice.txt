@@ -4,7 +4,4 @@
   |- profiles
      |- my.custom.device.profile.yml
 
-curl --request DELETE http://localhost:8500/v1/kv/edgex/devices/2.0/device-mqtt?recurse=true
-Permission denied: token with AccessorID '00000000-0000-0000-0000-000000000002' lacks permission 'key:write' on "edgex/devices/2.0/device-mqtt"
-
 docker run --rm --name=mqtt-scripts -v ./scripts:/scripts  --network host dersimn/mqtt-scripts --dir /scripts

@@ -1,0 +1,43 @@
+name: SensorCluster
+manufacturer: BKPI
+model: DHT11
+labels:
+  - humidity
+  - temperature
+deviceResources:
+  - name: humidity
+    description: Humidity value
+    properties:
+      value:
+        type: Int64
+        readWrite: R
+        scale: 1.0
+        defaultValue: "0"
+        minimum: "0"
+        maximum: "100"
+      units:
+        type: String
+        readWrite: R
+        defaultValue: "percent"
+  - name: temperature
+    description: Temperature value
+    properties:
+      value:
+        type: Int64
+        readWrite: R
+        scale: 1.0
+        defaultValue: "0"
+        minimum: "-50"
+        maximum: "100"
+      units:
+        type: String
+        readWrite: R
+        defaultValue: "celsius"
+
+deviceCommands:
+  - name: getHumidity
+    get:
+      - deviceResource: humidity
+  - name: getTemperature
+    get:
+      - deviceResource: temperature
