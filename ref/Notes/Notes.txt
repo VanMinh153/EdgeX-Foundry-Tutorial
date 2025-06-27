@@ -4,9 +4,10 @@ docker-compose up -d
 
 
 http://localhost:59882/api/v2/ping
-
-# 404 page not found
 http://localhost:59882/api/v2/device
+
+
+
 
 # Creating Access Token for API Gateway Authentication
 openssl ecparam -name prime256v1 -genkey -noout -out ec256.key

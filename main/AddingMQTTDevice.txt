@@ -1,7 +1,4 @@
-- custom-config
-  |- devices
-     |- my.custom.device.config.toml
-  |- profiles
-     |- my.custom.device.profile.yml
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
 docker run --rm --name=mqtt-scripts -v ./scripts:/scripts  --network host dersimn/mqtt-scripts --dir /scripts
+docker run --rm --name=mqtt-scripts -v ./scripts:/scripts --network host dersimn/mqtt-scripts --url mqtt://broker.emqx.io --dir /scripts

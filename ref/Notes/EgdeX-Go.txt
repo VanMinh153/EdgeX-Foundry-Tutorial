@@ -1,4 +1,9 @@
-# Sử dụng MSYS2 để cài đặt ZeroMQ
+http://localhost:59882/api/v2/ping
+
+
+
+
+# For Windowns
 pacman -S mingw-w64-x86_64-zeromq
 ===
 $env:CGO_CFLAGS = "-IC:/msys64/mingw64/include"

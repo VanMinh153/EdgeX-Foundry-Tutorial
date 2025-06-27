@@ -6,14 +6,11 @@
   Labels = [ "MQTT", "test" ]
   [DeviceList.Protocols]
     [DeviceList.Protocols.mqtt]
-      # Comment out/remove below to use multi-level topics
-      # CommandTopic = "CommandTopic"
-
-      # Uncomment below to use multi-level topics
-      CommandTopic = "command/my-custom-device"
-      
+       # Comment out/remove below to use multi-level topics
+       CommandTopic = "CommandTopic"
+       # Uncomment below to use multi-level topics
+       # CommandTopic = "command/my-custom-device"
     [[DeviceList.AutoEvents]]
-      Interval = "30s"
-      OnChange = false
-      SourceName = "message"
-
+       Interval = "30s"
+       OnChange = false
+       SourceName = "message"
