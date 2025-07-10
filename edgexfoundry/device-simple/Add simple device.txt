@@ -1,1 +1,7 @@
-GO111MODULE=on go mod init device-simple
+docker-compose -f docker-compose-no-secty.yml up -d
+
+
+export EDGEX_SECURITY_SECRET_STORE=false
+./device-simple
+
+# EDGEX_SECURITY_SECRET_STORE=false ./device-simple

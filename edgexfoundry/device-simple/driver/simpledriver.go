@@ -7,7 +7,6 @@
 
 // This package provides a simple example implementation of
 // ProtocolDriver interface.
-//
 package driver
 
 import (
@@ -17,6 +16,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"math/rand"
 	"os"
 	"reflect"
 	"strconv"
@@ -168,7 +168,10 @@ func (s *SimpleDriver) HandleReadCommands(deviceName string, protocols map[strin
 
 	if len(reqs) == 1 {
 		res = make([]*sdkModels.CommandValue, 1)
-		if reqs[0].DeviceResourceName == "SwitchButton" {
+		if reqs[0].DeviceResourceName == "randomnumber" {
+			cv, _ := sdkModels.NewCommandValue(reqs[0].DeviceResourceName, common.ValueTypeInt32, int32(rand.Intn(100)))
+			res[0] = cv
+		} else if reqs[0].DeviceResourceName == "SwitchButton" {
 			cv, _ := sdkModels.NewCommandValue(reqs[0].DeviceResourceName, common.ValueTypeBool, s.switchButton)
 			res[0] = cv
 		} else if reqs[0].DeviceResourceName == "Xrotation" {
