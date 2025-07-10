@@ -1,0 +1,24 @@
+# Docker Notes
+
+# List running containers
+docker-compose ps
+
+# Start containers in detached mode
+docker-compose up -d
+
+# View logs of all containers
+docker-compose logs
+
+*** Stop and Remove Containers ***
+
+# Stop the containers
+docker-compose stop
+
+# Stop and remove the containers
+docker-compose down
+
+# Stop and remove containers + volumes
+docker-compose down -v
+
+# Stop and remove containers + volumes + networks
+docker-compose up -d --remove-orphans

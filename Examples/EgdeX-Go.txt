@@ -1,0 +1,31 @@
+# EdgeX Foundry Go Example
+# make build-nats
+# make docker-nats
+make build
+
+# Install Redis database
+sudo apt install redis-server
+sudo systemctl status redis-server
+
+export EDGEX_SECURITY_SECRET_STORE=false
+cd cmd/core-metadata/
+./core-metadata &
+
+
+http://localhost:59882/api/v2/ping
+curl http://localhost:59882/api/v2/ping
+
+
+
+
+
+# For Windowns
+pacman -S mingw-w64-x86_64-zeromq
+===
+$env:CGO_CFLAGS = "-IC:/msys64/mingw64/include"
+$env:CGO_LDFLAGS = "-LC:/msys64/mingw64/lib -lzmq"
+$env:PKG_CONFIG_PATH = "C:/msys64/mingw64/lib/pkgconfig"
+
+echo "CGO_CFLAGS: $env:CGO_CFLAGS"
+echo "CGO_LDFLAGS: $env:CGO_LDFLAGS" 
+echo "PKG_CONFIG_PATH: $env:PKG_CONFIG_PATH"

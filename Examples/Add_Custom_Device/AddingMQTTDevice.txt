@@ -1,0 +1,55 @@
+# Starting
+- If you have previously run Device MQTT locally, you will need to remove the services configuration from Consul. This can be done with:
+DELETE http://localhost:8500/v1/kv/edgex/devices/2.0/device-mqtt?recurse=true
+
+- If you have run Device-MQTT before, you will need to delete the previously registered device(s) by:
+GET http://localhost:59881/api/v2/device/all
+DELETE http://localhost:59881/api/v2/device/name/<device-name>
+
+# Add a custom device
+custom-config
+  |- devices
+    |- my.custom.device.config.yaml
+  |- profiles
+    |- my.custom.device.profile.yml
+
+# Make docker-compose files
+cd compose-builder
+make gen ds-mqtt mqtt-broker no-secty ui
+
+# Add docker-compose.override.yml
+docker compose pull
+docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+
+# Create a MQTT Device Simulator
+docker run --rm --name=mqtt-scripts -v ./scripts:/scripts --network host dersimn/mqtt-scripts --dir /scripts
+docker run --rm --name=mqtt-scripts -v ./scripts:/scripts --network host dersimn/mqtt-scripts --url mqtt://broker.emqx.io:1883 --dir /scripts
+
+# Expected Behaviors
+1. Publish random number data every 15 seconds.
+> Publish incoming/data/my-custom-device/values
+{
+  "randnum" : 4161.3549,
+  "ping"    : "pong",
+  "message" : "Hello World"
+}
+
+2. Receive the reading request, then return the response.
+> Publish command/my-custom-device/randnum/get/293d7a00-66e1-4374-ace0-07520103c95f
+{"randnum":"55"}
+> Response command/response/#
+{"randnum":"220284"}
+
+3. Receive the set request, then change the device value.
+> Publish command/my-custom-device/testmessage/set/293d7a00-66e1-4374-ace0-07520103c95f
+{"message":"Hello EdgeX"}
+> Response command/response/#
+{"message":"Hello EdgeX"}
+
+# Execute Commands
+GET http://localhost:59882/api/v2/device/all
+PUT http://localhost:59882/api/v2/device/name/my-custom-device/message
+{
+  "message":"Welcome to EdgeX"
+}
+GET http://localhost:59882/api/v2/device/name/my-custom-device/message

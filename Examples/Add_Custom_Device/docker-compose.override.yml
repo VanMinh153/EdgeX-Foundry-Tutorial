@@ -1,0 +1,13 @@
+services:
+  device-mqtt:
+    environment:
+      MQTTBROKERINFO_INCOMINGTOPIC: "incoming/data/#"
+      MQTTBROKERINFO_RESPONSETOPIC: "command/response/#"
+      MQTTBROKERINFO_USETOPICLEVELS: "true"
+      DEVICE_DEVICESDIR: /custom-config/devices
+      DEVICE_PROFILESDIR: /custom-config/profiles
+    volumes:
+    - ./custom-config:/custom-config
+  # command:
+  #   environment:
+  #     MESSAGEQUEUE_EXTERNAL_URL: tcp://broker.emqx.io:1883

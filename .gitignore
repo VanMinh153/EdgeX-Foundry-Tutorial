@@ -2,6 +2,11 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
+# edgex-compose-levski/*
+# edgex-examples-2.3.0/
+# edgex-go-2.3.0/
+# device-virtual-go-jakarta/
+# compose-builder/
 *.exe
 *.exe~
 *.dll

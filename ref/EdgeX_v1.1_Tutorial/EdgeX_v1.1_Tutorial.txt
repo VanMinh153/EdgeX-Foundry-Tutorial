@@ -1,0 +1,239 @@
+Creating a device
+Mục tiêu: Tạo một thiết bị cảm biến (sensor cluster) đo nhiệt độ và độ ẩm để gửi dữ liệu về EdgeX Foundry.
+// python .\createSensorCluster.py -ip 10.1.56.42 
+
+48080: edgex-core-data 
+48081: edgex-core-metadata 
+48082: edgex-core-command
+
+# Create value descriptors
+Mô tả về loại dữ liệu mà thiết bị sẽ gửi lên EdgeX
+
+POST http://localhost:48080/api/v1/valuedescriptor 
+{
+  "name": "humidity", 
+  "description": "Ambient humidity in percent", 
+  "min": "0", 
+  "max": "100", 
+  "type": "Int64", 
+  "uomLabel": "humidity", 
+  "defaultValue": "0", 
+  "formatting": "%s", 
+  "labels": [ 
+    "environment", 
+    "humidity" 
+  ]
+}
+> 200 OK
+0908b55e-f150-4303-b0cb-56a8cd012c95
+================================================================
+POST http://localhost:48080/api/v1/valuedescriptor 
+{
+  "name": "temperature", 
+  "description": "Ambient temperature in Celsius", 
+  "min": "-50", 
+  "max": "100", 
+  "type": "Int64", 
+  "uomLabel": "temperature", 
+  "defaultValue": "0", 
+  "formatting": "%s", 
+  "labels": [ 
+    "environment", 
+    "temperature" 
+  ] 
+}
+> 200 OK
+ba389b2f-b1bf-43ff-afaa-6cf88af42c3b
+
+# Upload the device profile
+sensorClusterDeviceProfile.yaml là file định nghĩa cấu trúc thiết bị có những tài nguyên nào.
+POST http://localhost:48081/api/v1/deviceprofile/uploadfile
+form-data/files: “file”: sensorClusterDeviceProfile.yaml
+> 200 OK
+8af63cf1-e74d-4e94-b902-1e8ccd97f239
+
+# Create the device
+POST http://localhost:48081/api/v1/device
+{
+  "name": "Temp_and_Humidity_sensor_cluster_01",
+  "description": "Raspberry Pi sensor cluster",
+  "adminState": "unlocked",
+  "operatingState": "enabled",
+  "protocols": {
+    "example": {
+      "host": "dummy",
+      "port": "1234",
+      "unitID": "1"
+    }
+  },
+  "labels": ["Humidity sensor", "Temperature sensor", "DHT11"],
+  "location": "Tokyo",
+  "service": {
+    "name": "edgex-device-rest"
+  },
+  "profile": {
+    "name": "SensorCluster"
+  }
+}
+> 200 OK
+b705330c-4acd-4ad0-aa1f-fdf244c14d23
+Sending data to EdgeX Foundry
+POST http://localhost:49986/api/v1/resource/Temp_and_Humidity_sensor_cluster_01/temperature
+Text: 25
+> 200 OK
+
+POST http://localhost:49986/api/v1/resource/Temp_and_Humidity_sensor_cluster_01/humidity
+Text: 55
+> 200 OK
+
+# View the data
+GET http://localhost:48080/api/v1/reading
+> 200 OK
+[
+  {
+    "id": "00d40e78-274b-4c98-9d26-879f4c9cf03b",
+    "created": 1750944105939,
+    "origin": 1750944105926340613,
+    "device": "Temp_and_Humidity_sensor_cluster_01",
+    "name": "temperature",
+    "value": "22",
+    "valueType": "Int64"
+  },
+  {
+    "id": "0a301154-5bb5-4238-892a-6874c8b13df8",
+    "created": 1750948306694,
+    "origin": 1750948306688388362,
+    "device": "Temp_and_Humidity_sensor_cluster_01",
+    "name": "humidity",
+    "value": "55",
+    "valueType": "Int64"
+  }
+]
+
+GET http://localhost:48080/api/v1/event/count
+> 200 OK
+2
+
+# Generate sensor data with Python 
+pip install requests
+python3 ./genSensorData.py
+Using a DHT sensor on a Raspberry Pi
+MQTT export using the Rules Engine
+MQTT:
+{
+  "id":"047fbf7d-99d5-47f7-9a97-f232ed8ce07b",
+  "device":"Temp_and_Humidity_sensor_cluster_01",
+  "origin":1750946618028440399,
+  "readings":[
+    {
+      "id":"f4bbadbe-275b-4dc6-ae3c-878c9f6cc5c3",
+      "origin":1750946618027295440,
+      "device":"Temp_and_Humidity_sensor_cluster_01",
+      "name":"humidity",
+      "value":"55",
+      "valueType":"Int64"
+    }
+  ]
+}
+> [{“humidity”:55}]
+
+
+
+EdgeX cũng hỗ trợ xuất dữ liệu bằng cách lọc theo điều kiện thông qua một công cụ tên là Kuiper – tương tự như SQL.
+Ví dụ: chỉ gửi dữ liệu nhiệt độ nếu lớn hơn 30°C.
+
+# Creating a Kuiper stream with Postman 
+// DELETE http://localhost:48075/streams/stream_01
+POST http://localhost:48075/streams
+{
+  "sql": "create stream stream_01 () WITH (FORMAT=\"JSON\", TYPE=\"edgex\")"
+}
+
+
+# Creating a Kuiper rule with Postman
+POST http://localhost:48075/rules
+{
+  "id": "rule_01",
+  "sql": "SELECT readings[0].name as name, readings[0].value as value FROM stream_01 WHERE readings[0].name = 'humidity'",
+  "actions": [
+    {
+      "mqtt": {
+        "server": "tcp://broker.emqx.io:1883",
+        "topic": "Topic_01",
+        "username": "",
+        "password": "",
+        "clientId": "Client_ID_01"
+      }
+    },
+    {
+      "log": {}
+    }
+  ]
+}
+
+Sending commands
+# Xây dựng và chạy container ứng dụng test (colorChanger)
+git clone https://github.com/jonas-werner/colorChanger.git
+cd colorChanger/
+docker build -t colorchanger .
+docker run -d -p 5000:5000 --name colorchanger colorchanger:latest
+App ready in url: http://localhost:5000/
+
+# Kiểm tra API
+PUT http://localhost:5000/api/v1/device/edgexTutorial/changeColor
+{
+  "color": "navy"
+}
+> 201 CREATED
+Command accepted
+
+# Registering the app as a new device 
+// DELETE http://<edgex_ip>:48081/api/v1/device/name/<device_name>
+python .\createRESTDevice.py -ip  10.1.56.42 -devip 10.1.56.42
+
+# Gửi lệnh điều khiển ứng dụng qua EdgeX
+Liệt kê các ứng dụng đã đăng ký:
+GET http://localhost:48082/api/v1/device
+PUT http://localhost:48082/api/v1/device/48e773f1-7226-442f-b2cd-16866d7503c3/command/bda2e773-e329-4375-8d3c-11cf09cc6d49
+{
+  "color": "orange"
+}
+
+# Creating a rule to execute commands automatically
+// DELETE http://localhost:48075/streams/temp_threshold
+POST http://localhost:48075/streams
+{
+  "sql": "create stream temp_threshold() WITH (FORMAT=\"JSON\", TYPE=\"edgex\")"
+}
+
+
+
+# Creating a Kuiper rule with Postman
+POST http://localhost:48075/rules
+{
+  "id": "temp_rule",
+  "sql": "SELECT temperature FROM temp_threshold WHERE temperature > 70",
+  "actions": [
+    {
+      "rest": {
+        "url": "http://localhost:48082/api/v1/device/58469975-7091-4782-b7f6-303703fbef55/command/3b310bde-7f85-4e0d-8fe6-0cefa4815211",
+        "method": "put",
+        "retryInterval": -1,
+        "dataTemplate": "{\"color\":\"red\"}",
+        "sendSingle": true
+      }
+    },
+    {
+      "log": {}
+    }
+  ]
+}
+
+# Check rule
+POST http://localhost:49986/api/v1/resource/Temp_and_Humidity_sensor_cluster_01/temperature
+Text: 77
+
+Visualize data
+docker pull grafana/grafana
+docker run -d --name=grafana -p 3000:3000 grafana/grafana
+
