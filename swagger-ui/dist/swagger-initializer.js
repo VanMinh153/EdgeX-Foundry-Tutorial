@@ -32,8 +32,8 @@ window.onload = function() {
         const port = url.port;
         const path = url.pathname;
         const search = url.search || '';
-        // Create full proxy URL including the proxy server address
-        request.url = `http://localhost:3000/api/${port}${path}${search}`;
+        // Create proxy URL with simplified pattern: /{port}{path}
+        request.url = `http://localhost:3000/${port}${path}${search}`;
       }
       return request;
     }
