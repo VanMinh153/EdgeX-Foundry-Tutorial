@@ -1,0 +1,26 @@
+{
+  "name": "edgex-swagger-ui-proxy",
+  "version": "1.0.0",
+  "description": "Proxy server for EdgeX Swagger UI to avoid CORS issues",
+  "main": "proxy-server.js",
+  "scripts": {
+    "start": "node proxy-server.js",
+    "dev": "nodemon proxy-server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^2.0.9"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "keywords": [
+    "edgex",
+    "swagger",
+    "proxy",
+    "cors"
+  ],
+  "author": "",
+  "license": "MIT"
+}
